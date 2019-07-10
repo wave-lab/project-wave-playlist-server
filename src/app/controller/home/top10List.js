@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true })
 
-const resUtil = require('../../module/responseUtil')
-const resCode = require('../../model/returnCode')
-const resMessage = require('../../../config/returnMessage')
+const responseUtil = require('../../module/responseUtil')
+const returnCode = require('../../model/returnCode')
+const returnMessage = require('../../../config/returnMessage')
 const playlistModules = require('../../module/playlistModules') //플레이리스트 조회 모듈
 
 const pool = require('../../module/pool');
@@ -18,9 +18,12 @@ router.get('/', async (req, res) => {
 
     result.push(result1);
     result.push(result2);
-    
-    res.status(200).send(resUtil.successTrue(resCode.OK, "TOP 10 조회", result));
 
+    if(!result1 || !result2){
+        res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.TOP10_SELECT_FAIL));
+    }else{
+        res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.TOP10_SELECT_SUCCESS, result));
+    }
     // const inputGenreName = req.query.genre;
     // const inputMoodName = req.query.mood; 
 

@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router({mergeParams: true})
 
-const resUtil = require('../../module/responseUtil')
-const resCode = require('../../model/returnCode')
-const resMessage = require('../../../config/returnMessage')
+const responseUtil = require('../../module/responseUtil')
+const returnCode = require('../../model/returnCode')
+const returnMessage = require('../../../config/returnMessage')
 
 const playlistModules = require('../../module/playlistModules') //myPlaylist 조회 모듈
 const pool = require('../../module/pool');
@@ -28,7 +28,7 @@ router.post('/', async (req, res) => {
 
     const playlistSelect = await playlist.find({$and : [{"userIdx" : inputUserIdx}, {"playlistName" : inputName}]});
     if(playlistSelect.length != 0) {
-        res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.ALREADY_CUSTOM_PLAYLIST));
+        res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, returnMessage.ALREADY_CUSTOM_PLAYLIST));
     } else {
         await playlist.create({
             playlistName : inputName,
@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
                 await myPlaylist.updateOne({"_id" : myListResult._id}, {$set : {"customPlaylist" : myCustom}});
     
                 const addCustomResult = (await myPlaylist.find({"userIdx" : inputUserIdx}));
-                res.status(200).send(resUtil.successTrue(resCode.OK, resMessage.CUSTOM_CREATE_SUCCESS, addCustomResult[0]));
+                res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.CUSTOM_CREATE_SUCCESS, addCustomResult[0]));
             }
         })
     }
