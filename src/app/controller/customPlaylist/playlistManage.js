@@ -47,6 +47,7 @@ router.post('/', async (req, res) => {
                 await myPlaylist.updateOne({"_id" : myListResult._id}, {$set : {"customPlaylist" : myCustom}});
     
                 const addCustomResult = (await myPlaylist.find({"userIdx" : inputUserIdx}));
+              
                 res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.CUSTOM_CREATE_SUCCESS, addCustomResult[0]));
             }
         })
@@ -66,11 +67,11 @@ router.delete('/', async (req, res) => {
     console.log(inputPlaylistIdx);
 
     if(!inputPlaylistIdx) {
-        res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.OUT_OF_VALUE));
+        res.status(200).send(responseUtil.successFalse(resCode.BAD_REQUEST, resMessage.OUT_OF_VALUE));
     } else {
         const playlistSelect = await playlist.find({$and : [{"userIdx" : inputUserIdx}, {"_id" : inputPlaylistIdx}]});
         if(playlistSelect.length == 0) {
-            res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.NOT_EXIST_CUSTOM_PLAYLIST));
+            res.status(200).send(responseUtil.successFalse(resCode.BAD_REQUEST, resMessage.NOT_EXIST_CUSTOM_PLAYLIST));
         }
         else {
             const getMyPlaylist = (await myPlaylist.find({"userIdx" : inputUserIdx}))[0];
@@ -84,7 +85,7 @@ router.delete('/', async (req, res) => {
 
             const deleteCustomResult = (await myPlaylist.find({"userIdx" : inputUserIdx}))[0];
             console.log(deleteCustomResult);
-            res.status(200).send(resUtil.successTrue(resCode.OK, resMessage.PLAYLIST_DELETE_SUCCESS, deleteCustomResult));
+            res.status(200).send(responseUtil.successTrue(resCode.OK, resMessage.PLAYLIST_DELETE_SUCCESS, deleteCustomResult));
         }
     }
 });
