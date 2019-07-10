@@ -17,9 +17,9 @@ router.get('/', async (req, res) => {
     if (ID != -1) {
 
         const result = (await myPlaylist.find({ userIdx: ID }))[0];
-        const result2 = (await playlist.find({ _id: result.likePlaylist }))[0];
+        const result2 = (await playlist.find({ _id: result.uploadPlaylist }))[0];
 
-        res.status(200).send(resUtil.successTrue(resCode.OK, "좋아요 곡 조회", result2));
+        res.status(200).send(resUtil.successTrue(resCode.OK, "업로드 곡 조회", result2));
     } else {
         res.status(200).send(resUtil.successFalse(resCode.UNAUTHORIZED, resMessage.EMPTY_TOKEN));
     }
