@@ -26,7 +26,6 @@ router.get('/', async (req, res) => {
                 thumbnail.push(songList[j].artwork);
             }
             let data = {
-                songList: result1.songList,
                 _id: result1._id,
                 playlistName: result1.playlistName,
                 playlistComment: result1.playlistComment,

@@ -7,7 +7,8 @@ const returnCode = require('../../model/returnCode');
 const returnMessage = require('../../../config/returnMessage');
 const responseUtil = require('../../module/responseUtil');
 
-router.get('/', async (req, res, next) => {
+router.get('/', async (req, res) => {
+
     const ID = await jwt.verify(req.headers.authorization);
 
     let result = {
@@ -27,7 +28,7 @@ router.get('/', async (req, res, next) => {
         result.rateSongCount = userInfoResult.rateSongCount;
         result.totalPoint = userInfoResult.totalPoint;
         result.auth = true;
-        
+
         res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.SUCCESS, result));
     } else if (ID == -1) { //비회원일 경우
         res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.SUCCESS, result));
