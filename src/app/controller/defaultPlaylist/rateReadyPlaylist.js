@@ -7,6 +7,7 @@ const responseUtil = require('../../module/responseUtil');
 
 const myPlaylist = require('../../model/schema/myPlaylist');
 const playlist = require('../../model/schema/playlist');
+const song = require('../../model/schema/song');
 
 router.get('/', async (req, res) => {
 
@@ -20,12 +21,10 @@ router.get('/', async (req, res) => {
         res.status(200).send(responseUtil.successTrue(returnCode.OK, "평가 대기곡 플레이리스트", result2));
     }
     //비회원일 경우
-    else if (ID == -1) {
-        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "로그인을 해 주세요"));
-    }
-    //토큰 검증 실패
     else {
-        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "access denied"));
+        const rateReadySongs = (await song.find({ songStatus: 0 }).limit(10));
+        
+        res.status(200).send(responseUtil.successTrue(returnCode.OK, "평가 대기곡 플레이리스트", rateReadySongs));
     }
 })
 
