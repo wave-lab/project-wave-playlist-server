@@ -20,7 +20,11 @@ router.get('/', async (req, res) => {
         const result = (await myPlaylist.find({ userIdx: ID }))[0];
         //적중 성공 플레이리스트 조회
         if (status == 'success') {
-            const result2 = (await playlist.find({ _id: result.hitsPlaylist }, { songList: { $elemMatch: { songStatus: 1 } } }))[0];
+            let query = {
+                '_id': result.hitsPlaylist,
+                'songList.songStatus': 1
+            }
+            const result2 = (await playlist.find(query))[0];
             res.status(200).send(resUtil.successTrue(resCode.OK, "적중 성공 결과 조회", result2));
         }
         //평가 적중 결과 플레이리스트 조회
