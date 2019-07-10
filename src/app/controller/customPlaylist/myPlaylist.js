@@ -34,16 +34,13 @@ router.get('/', async (req, res) => {
             }
             result.push(data);
         }
-
-        res.status(200).send(responseUtil.successTrue(returnCode.OK, "myPlaylist 조회 성공", result))
-    }
-    //비회원일 경우
-    else if (ID == -1) {
-        res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, "NO AUTHORIZATION"));
-    }
-    //토큰 검증 실패
-    else {
-        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "access denied"));
+        res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.PLAYLIST_SELECT_SUCCESS, result))
+    } 
+    else if(ID == -1) { //비회원일 경우
+        res.status(200).send(responseUtil.successFalse(returnCode.NOT_FOUND, returnMessage.NOT_CORRECT_TOKEN_USER));
+    } 
+    else { //토큰 검증 실패
+        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, returnMessage.EMPTY_TOKEN));
     }
 })
 

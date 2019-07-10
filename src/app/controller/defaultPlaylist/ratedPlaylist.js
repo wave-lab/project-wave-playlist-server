@@ -55,11 +55,11 @@ router.get('/', async (req, res) => {
     }
     //비회원일 경우
     else if (ID == -1) {
-        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "로그인을 해 주세요"));
+        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, returnMessage.NOT_CORRECT_TOKEN_USER));
     }
     //토큰 검증 실패
     else {
-        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "access denied"));
+        res.status(200).send(responseUtil.successFalse(returnCode.UNAUTHORIZED, returnMessage.EMPTY_TOKEN));
     }
 })
 
