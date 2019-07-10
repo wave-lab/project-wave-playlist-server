@@ -13,8 +13,8 @@ router.get('/', async (req, res) => {
 
     const result = new Array();
 
-    const result1 = await top10.find({ top10Category: "장르" });
-    const result2 = await top10.find({ top10Category: "분위기" })
+    const result1 = await top10.find({ top10Category: "장르" }).sort({checkTime : -1}).limit(8);
+    const result2 = await top10.find({ top10Category: "분위기" }).sort({checkTime : -1}).limit(8);
 
     result.push(result1);
     result.push(result2);

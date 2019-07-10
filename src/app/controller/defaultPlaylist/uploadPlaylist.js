@@ -45,7 +45,6 @@ router.get('/', async (req, res) => {
             }
             returnMessage = '업로드 곡 조회'
         }
-        console.log(query);
         const result2 = (await playlist.find(query))[0];
         res.status(200).send(resUtil.successTrue(resCode.OK, returnMessage, result2));
     } else {
