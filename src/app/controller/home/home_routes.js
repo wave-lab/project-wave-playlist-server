@@ -6,6 +6,6 @@ router.use('/home/userInfo', require('./homeUserInfo'));
 
 router.use('/home/playlist', require('./homePlaylist'));
 
-router.use('/home/top10', require('./top10List'));
+router.use('/top10', require('./top10List'));
 
 module.exports = router;

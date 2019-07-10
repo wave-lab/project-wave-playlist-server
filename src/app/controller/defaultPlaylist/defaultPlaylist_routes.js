@@ -17,6 +17,6 @@ router.use('/default/rateReady', require('./rateReadyPlaylist'));
 router.use('/default/like/user/:userIdx', require('./likePlaylist'));
 
 //추천곡 조회
-router.use('/default/recommend/:userIdx', require('./recommendPlaylist'));
+router.use('/recommend', require('./recommendPlaylist'));
 
 module.exports = router;
