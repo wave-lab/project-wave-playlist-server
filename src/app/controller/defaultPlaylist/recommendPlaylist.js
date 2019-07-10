@@ -1,57 +1,39 @@
 const express = require('express');
-const router = express.Router({mergeParams: true})
+const router = express.Router({ mergeParams: true })
 
 const resUtil = require('../../module/responseUtil')
 const resCode = require('../../model/returnCode')
 const resMessage = require('../../../config/returnMessage')
 
+const jwt = require('../../module/jwt');
 const pool = require('../../module/pool');
 
 const song = require('../../model/schema/song');
 
-/*
-추천곡 조회
-METHOD       : GET
-URL          : /songs/recommend/:userIdx
-PARAMETER    : userIdx = user의 인덱스
-*/
 router.get('/', async (req, res) => {
-    const inputUserIdx = req.params.userIdx;
-    var result = new Array();
 
-    if(!inputUserIdx) {
-        res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.OUT_OF_VALUE));
-    }
-    else {
-        const artistSelectQuery = 'SELECT originArtistIdx FROM user_originArtist WHERE userIdx = (?)';
-        const artistSelectResult = await pool.queryParam_Arr(artistSelectQuery, inputUserIdx);
+    const ID = jwt.verify(req.headers.authorization);
 
-        //console.log(1);
-        //console.log(artistSelectResult);
+    if (ID != -1) {
 
-        if(!artistSelectResult) {
-            res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.ARTIST_SELECT_FAIL));
+        const artistSelectQuery = 'SELECT originArtistIdx FROM user_originArtist WHERE userIdx = ?';
+        const artistSelectResult = await pool.queryParam_Arr(artistSelectQuery, ID);
+
+        let query = {
+            $or: []
+        };
+
+        for (let i = 0; i < artistSelectResult.length; i++) {
+            query.$or.push({
+                originArtistIdx: artistSelectResult[i].originArtistIdx
+            });
         }
-        else {
-            //console.log(artistSelectResult);
-            //console.log(artistSelectResult[0].originArtistIdx);
-            for(let i = 0; i < artistSelectResult.length; i++) {
-                await song.find({originArtistIdx : artistSelectResult[i].originArtistIdx}, async function(err, songResult) {
-                    if(err) {
-                        res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.RECOMMEND_SELECT_FAIL));
-                    } else {
-                        //console.log(songResult)
-                        result[i] = songResult;
-                    }
-                }).sort({streamCount : -1}).limit(30);;
-            }
 
-            if(!result) {
-                res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.RECOMMEND_SELECT_FAIL));
-            } else {
-                res.status(200).send(resUtil.successTrue(resCode.OK, resMessage.RECOMMEND_SELECT_SUCCESS, result));
-            }
-        }
+        const result = await song.find(query).sort({ streamCount: -1 }).limit(30);
+
+        res.status(200).send(resUtil.successTrue(resCode.OK, "추천곡 조회", result));
+    } else {
+        res.status(200).send(resUtil.successFalse(resCode.UNAUTHORIZED, resMessage.EMPTY_TOKEN));
     }
 })
 
