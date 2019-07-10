@@ -14,6 +14,6 @@ router.use('/custom/manage/:playlistIdx', require('./playlistManage'));
 router.use('/custom/manage', require('./playlistManage'));
 
 // 보관함의 플레이리스트 탭 클릭시 history+custom 플레이리스트 조회 
-router.use('/custom/myPlaylist', require('./myPlaylist'));
+router.use('/custom', require('./myPlaylist'));
 
 module.exports = router;

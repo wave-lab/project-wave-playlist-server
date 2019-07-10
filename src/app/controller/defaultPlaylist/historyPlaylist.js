@@ -3,9 +3,9 @@ const router = express.Router({mergeParams: true});
 const moment = require('moment');
 
 const timeFormat = moment().add(9, 'hours').format('YYYY-MM-DD HH:mm:ss');
-const resUtil = require('../../module/responseUtil')
-const resCode = require('../../model/returnCode')
-const resMessage = require('../../../config/returnMessage')
+const responseUtil = require('../../module/responseUtil')
+const returnCode = require('../../model/returnCode')
+const returnMessage = require('../../../config/returnMessage')
 
 const playlistModules = require('../../module/playlistModules') //myPlaylist 조회 모듈
 
@@ -29,12 +29,12 @@ router.post('/', async (req, res) => {
 
     console.log(inputSongIdx);
     if(!inputSongIdx || !inputUserIdx) {
-        res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.OUT_OF_VALUE));
+        res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, returnMessage.OUT_OF_VALUE));
     }
     else {
         const songResult = await song.find({_id: inputSongIdx});
         if(songResult.length == 0) {
-            res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.SONG_SELECT_FAIL));
+            res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, returnMessage.SONG_SELECT_FAIL));
         } else {
             const historyResult = await history.find({$and : [{"userIdx" : inputUserIdx}, {"songIdx" : inputSongIdx}]});
             if(historyResult.length == 0) {
@@ -46,16 +46,16 @@ router.post('/', async (req, res) => {
                     playTime : timeFormat
                 }, async function(err, insertResult) {
                     if(err) {
-                        res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.HISTORY_INSERT_FAIL));
+                        res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, returnMessage.HISTORY_INSERT_FAIL));
                     } else {
-                        res.status(200).send(resUtil.successTrue(resCode.BAD_REQUEST, resMessage.HISTORY_INSERT_SUCCESS, insertResult));
+                        res.status(200).send(responseUtil.successTrue(returnCode.BAD_REQUEST, returnMessage.HISTORY_INSERT_SUCCESS, insertResult));
                     }
                 })
             } else {    
                 await history.updateOne({$and : [{"userIdx" : inputUserIdx}, {"songIdx" : inputSongIdx}]}, {$set : {"playCount" : historyResult[0].playCount + 1}});
                 await history.updateOne({$and : [{"userIdx" : inputUserIdx}, {"songIdx" : inputSongIdx}]}, {$set : {"playTime" : timeFormat}});
                 
-                res.status(200).send(resUtil.successTrue(resCode.CREATED, resMessage.CUSTOM_CREATE_SUCCESS));
+                res.status(200).send(responseUtil.successTrue(returnCode.CREATED, returnMessage.CUSTOM_CREATE_SUCCESS));
             }
             
         }
@@ -72,12 +72,12 @@ router.get('/', async (req, res) => {
     const inputUserIdx = req.params.userIdx
 
     if(!inputUserIdx) {
-        res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.OUT_OF_VALUE));
+        res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, returnMessage.OUT_OF_VALUE));
     }
     else {
         const historySelect = await history.find({userIdx : inputUserIdx}).sort({playTime : -1}).limit(100);
         console.log(historySelect[0]);
-        res.status(200).send(resUtil.successTrue(resCode.BAD_REQUEST, resMessage.OUT_OF_VALUE, historySelect));
+        res.status(200).send(responseUtil.successTrue(returnCode.BAD_REQUEST, returnMessage.OUT_OF_VALUE, historySelect));
     }
 })
 
