@@ -12,6 +12,8 @@ const playlist = require('../../model/schema/playlist');
 
 router.get('/', async (req, res) => {
 
+    const ID = jwt.verify(req.headers.authorization);
+
     if (ID > 0) {
         const result = (await myPlaylist.find({ userIdx: ID }))[0];
         if(!result){

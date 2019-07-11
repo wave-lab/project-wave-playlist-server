@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router();
+const router = express.Router({ mergeParams: true })
 
 const responseUtil = require('../../module/responseUtil')
 const returnCode = require('../../model/returnCode')
@@ -16,7 +16,6 @@ PARAMETER    : playlistIdx = playlist테이블의 _id(idx)값
 */
 router.get('/', async (req, res) => {
     const inputPlaylistIdx = req.params.playlistIdx;
-
     //ID = userIdx
     let ID = jwt.verify(req.headers.authorization);
 
@@ -27,6 +26,7 @@ router.get('/', async (req, res) => {
         }
         else {
             const getSongListResult = await playlistModules.getSongList(inputPlaylistIdx);
+            console.log(getSongListResult.length);
             if(getSongListResult == undefined) {
                 res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, returnMessage.PLAYLIST_SELECT_FAIL));
             } else {
