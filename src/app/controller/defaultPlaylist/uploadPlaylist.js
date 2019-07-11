@@ -22,6 +22,7 @@ router.get('/', async (req, res) => {
         //1 = pass
         //2 = fail
         let query;
+        let returnMessage = '';
         if (status == 'wait') {
             query = {
                 '_id': result.uploadPlaylist,

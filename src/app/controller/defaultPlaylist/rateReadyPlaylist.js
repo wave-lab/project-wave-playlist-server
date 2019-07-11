@@ -31,7 +31,6 @@ router.get('/', async (req, res) => {
     //비회원일 경우
     else {
         const rateReadySongs = (await song.find({ songStatus: 0 }).limit(10));
-        const rateReadySongs = (await song.find({ songStatus: 0 }).limit(10));
         if(!rateReadySongs){
             res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.RATE_READY_PLAYLIST_FAIL));
         }else{

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({mergeParams: true});
 
 // playlist의 곡 조회
-router.use('/custom/songs/:playlistIdx', require('./playlist'));
+//router.use('/:playlistIdx', require('./playlist'));
 
 // playlist의 곡 추가/삭제
 router.use('/custom/songs', require('./playlist'));

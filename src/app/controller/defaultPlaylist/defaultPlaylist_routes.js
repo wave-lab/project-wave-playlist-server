@@ -34,4 +34,7 @@ router.use('/rated', require('./ratedPlaylist'));
 //좋아요한 곡 플레이리스트 조회
 router.use('/likes', require('./likePlaylist'));
 
+// playlist의 곡 조회
+router.use('/:playlistIdx', require('./getPlaylist'));
+
 module.exports = router;
