@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
             res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.LIKE_SONG_SELECT_FAIL));
         }else{
             const result2 = (await playlist.find({ _id: result.likePlaylist }))[0];
-            res.status(200).send(resUtil.successTrue(resCode.OK, returnMessage.LIKE_SONG_SELECT_SUCCESS, result2));
+            res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.LIKE_SONG_SELECT_SUCCESS, result2));
         }
     }
     //비회원일 경우

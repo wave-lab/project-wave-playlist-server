@@ -18,22 +18,26 @@ router.get('/', async (req, res) => {
         const artistSelectQuery = 'SELECT originArtistIdx FROM user_originArtist WHERE userIdx = ?';
         const artistSelectResult = await pool.queryParam_Arr(artistSelectQuery, ID);
 
-        let query = {
-            $or: []
-        };
-
-        for (let i = 0; i < artistSelectResult.length; i++) {
-            query.$or.push({
-                originArtistIdx: artistSelectResult[i].originArtistIdx
-            });
-        }
-
-        const result = await song.find(query).sort({ streamCount: -1 }).limit(30);
-
-        if(!result){
-            res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.RECOMMEND_SELECT_FAIL));
-        }else{
-            res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.RECOMMEND_SELECT_SUCCESS, result));
+        if(artistSelectResult.length == 0) {
+            res.status(200).send(responseUtil.successTrue(returnCode.NOT_FOUND, "추천곡이 없습니다."));
+        }else {
+            let query = {
+                $or: []
+            };
+    
+            for (let i = 0; i < artistSelectResult.length; i++) {
+                query.$or.push({
+                    originArtistIdx: artistSelectResult[i].originArtistIdx
+                });
+            }
+    
+            const result = await song.find(query).sort({ streamCount: -1 }).limit(30);
+    
+            if(!result){
+                res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.RECOMMEND_SELECT_FAIL));
+            }else{
+                res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.RECOMMEND_SELECT_SUCCESS, result));
+            }
         }
     }else if(ID == -1) { //비회원일 경우
         res.status(200).send(responseUtil.successFalse(returnCode.NOT_FOUND, returnMessage.NOT_CORRECT_TOKEN_USER));
