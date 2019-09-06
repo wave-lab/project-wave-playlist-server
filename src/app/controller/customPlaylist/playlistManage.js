@@ -1,5 +1,5 @@
 const express = require('express');
-const router = express.Router({mergeParams: true})
+const router = express.Router({ mergeParams: true })
 
 const jwt = require('../../module/jwt');
 const responseUtil = require('../../module/responseUtil')
@@ -20,49 +20,67 @@ BODY         : {
     "playlistComment" : "플레이스트 설명"
 }
 */
-router.post('/', async (req, res) => {
-    const inputName = req.body.playlistName;
-    const inputComment = req.body.playlistComment;
+router.get('/', async (req, res) => {
+    await playlist.deleteMany({playlistComment : 'TOP10_Ballad'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_POP'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Acoustic'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Hiphop'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_R&B/Soul'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Rock'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_etc'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Exciting'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Mournful'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Romantic'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Sad'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Hip'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Calm'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Groovy'})
+    await playlist.deleteMany({'playlistComment' : 'TOP10_Dreamy'})
 
-    //ID = userIdx
-    let ID = jwt.verify(req.headers.authorization);
 
-    //회원일 경우
-    if (ID > 0) {
-        const playlistSelect = await playlist.find({$and : [{"userIdx" : ID}, {"playlistName" : inputName}]});
-    if(playlistSelect.length != 0) {
-        res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, responseMessage.ALREADY_CUSTOM_PLAYLIST));
-    } else {
-        await playlist.create({
-            playlistName : inputName,
-            playlistComment : inputComment,
-            userIdx : ID
-        }, async function(err, playlistResult){
-            if(err) {
-                res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, responseMessage.CUSTOM_CREATE_FAIL));
-            }
-            else {    
-                const myListResult = (await myPlaylist.find({"userIdx" : ID}))[0];
-                const myCustom = myListResult.customPlaylist
-                const addPlaylist = playlistResult._id;
-    
-                await myCustom.push(addPlaylist); // (await songList.push(addSong)에서 unshift로 바꿈(앞에 넣기위해서))->상관없음
-                await myPlaylist.updateOne({"_id" : myListResult._id}, {$set : {"customPlaylist" : myCustom}});
-    
-                const addCustomResult = (await myPlaylist.find({"userIdx" : ID}));
-                res.status(200).send(responseUtil.successTrue(returnCode.OK, responseMessage.CUSTOM_CREATE_SUCCESS, addCustomResult[0]));
-            }
-        })
-    }
-    }
-    //비회원일 경우
-    else if (ID == -1) {
-        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "로그인을 해 주세요"));
-    }
-    //토큰 검증 실패
-    else {
-        res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "access denied"));
-    }
+
+    // const inputName = req.body.playlistName;
+    // const inputComment = req.body.playlistComment;
+
+    // //ID = userIdx
+    // let ID = jwt.verify(req.headers.authorization);
+
+    // //회원일 경우
+    // if (ID > 0) {
+    //     const playlistSelect = await playlist.find({ $and: [{ "userIdx": ID }, { "playlistName": inputName }] });
+    //     if (playlistSelect.length != 0) {
+    //         res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, responseMessage.ALREADY_CUSTOM_PLAYLIST));
+    //     } else {
+    //         await playlist.create({
+    //             playlistName: inputName,
+    //             playlistComment: inputComment,
+    //             userIdx: ID
+    //         }, async function (err, playlistResult) {
+    //             if (err) {
+    //                 res.status(200).send(responseUtil.successFalse(returnCode.BAD_REQUEST, responseMessage.CUSTOM_CREATE_FAIL));
+    //             }
+    //             else {
+    //                 const myListResult = (await myPlaylist.find({ "userIdx": ID }))[0];
+    //                 const myCustom = myListResult.customPlaylist
+    //                 const addPlaylist = playlistResult._id;
+
+    //                 await myCustom.push(addPlaylist); // (await songList.push(addSong)에서 unshift로 바꿈(앞에 넣기위해서))->상관없음
+    //                 await myPlaylist.updateOne({ "_id": myListResult._id }, { $set: { "customPlaylist": myCustom } });
+
+    //                 const addCustomResult = (await myPlaylist.find({ "userIdx": ID }));
+    //                 res.status(200).send(responseUtil.successTrue(returnCode.OK, responseMessage.CUSTOM_CREATE_SUCCESS, addCustomResult[0]));
+    //             }
+    //         })
+    //     }
+    // }
+    // //비회원일 경우
+    // else if (ID == -1) {
+    //     res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "로그인을 해 주세요"));
+    // }
+    // //토큰 검증 실패
+    // else {
+    //     res.status(200).send(responseUtil.successFalse(returnCode.FORBIDDEN, "access denied"));
+    // }
 });
 
 
@@ -80,23 +98,23 @@ router.delete('/', async (req, res) => {
 
     //회원일 경우
     if (ID > 0) {
-        if(!inputPlaylistIdx) {
+        if (!inputPlaylistIdx) {
             res.status(200).send(resUtil.successFalse(resCode.BAD_REQUEST, resMessage.NULL_VALUE));
         } else {
-            const playlistSelect = await playlist.find({$and : [{"userIdx" : ID}, {"_id" : inputPlaylistIdx}]});
-            if(playlistSelect.length == 0) {
+            const playlistSelect = await playlist.find({ $and: [{ "userIdx": ID }, { "_id": inputPlaylistIdx }] });
+            if (playlistSelect.length == 0) {
                 res.status(200).send(resUtil.successTrue(resCode.BAD_REQUEST, resMessage.NOT_EXIST_CUSTOM_PLAYLIST));
             }
             else {
-                const getMyPlaylist = (await myPlaylist.find({"userIdx" : ID}))[0];
+                const getMyPlaylist = (await myPlaylist.find({ "userIdx": ID }))[0];
                 const myCustom = getMyPlaylist.customPlaylist
-    
+
                 await myCustom.pull(inputPlaylistIdx);
-                await myPlaylist.updateOne({"_id" : getMyPlaylist._id}, {$set : {"customPlaylist" : myCustom}});
-    
-                await playlist.deleteOne({"_id" : inputPlaylistIdx});
-    
-                const deleteCustomResult = (await myPlaylist.find({"userIdx" : ID}))[0];
+                await myPlaylist.updateOne({ "_id": getMyPlaylist._id }, { $set: { "customPlaylist": myCustom } });
+
+                await playlist.deleteOne({ "_id": inputPlaylistIdx });
+
+                const deleteCustomResult = (await myPlaylist.find({ "userIdx": ID }))[0];
                 res.status(200).send(resUtil.successTrue(resCode.OK, resMessage.PLAYLIST_DELETE_SUCCESS, deleteCustomResult));
             }
         }
