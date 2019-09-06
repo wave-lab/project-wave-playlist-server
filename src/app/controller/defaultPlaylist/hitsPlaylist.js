@@ -9,6 +9,7 @@ const jwt = require('../../module/jwt');
 
 const myPlaylist = require('../../model/schema/myPlaylist');
 const playlist = require('../../model/schema/playlist');
+const playlistModules = require('../../module/playlistModules');
 
 router.get('/', async (req, res) => {
 
@@ -16,27 +17,29 @@ router.get('/', async (req, res) => {
     const status = req.query.status;
 
     if(ID > 0) { //회원일 경우
-        const result = (await myPlaylist.find({ userIdx: ID }))[0];
-        //적중 성공 플레이리스트 조회
+        //적중하고 업로드 된 곡들 조회
+        const hitsIdx = (await playlistModules.getPlayList(ID, 'hits'))._id;
+        console.log(hitsIdx);
         if (status == 'success') {
-            let query = {
-                '_id': result.hitsPlaylist,
+            let successQuery = {
+                '_id': hitsIdx,
                 'songList.songStatus': 1
             }
-            const result2 = (await playlist.find(query))[0];
-            if(!result2){
+            const getSuccessResult = (await playlist.find(successQuery))[0];
+            console.log(getSuccessResult);
+            if(!getSuccessResult){
                 res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.PLAYLIST_SELECT_FAIL));
             }else{
-                res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.PLAYLIST_SELECT_SUCCESS, result2));
+                res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.PLAYLIST_SELECT_SUCCESS, getSuccessResult));
             }
         }
-        //평가 적중 결과 플레이리스트 조회
+        //업로드 여부 상관없이 적중된 곡들 다 조회
         else {
-            const result2 = (await playlist.find({ _id: result.hitsPlaylist }))[0];
-            if(!result2){
-                res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.PLAYLIST_SELECT_FAIL, result2));
+            const getAllResult = (await playlistModules.getSongList(hitsIdx))
+            if(!getAllResult){
+                res.status(200).send(responseUtil.successFalse(returnCode.DB_ERROR, returnMessage.PLAYLIST_SELECT_FAIL, getAllResult));
             }else{
-                res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.PLAYLIST_SELECT_SUCCESS, result2));
+                res.status(200).send(responseUtil.successTrue(returnCode.OK, returnMessage.PLAYLIST_SELECT_SUCCESS, getAllResult));
             }
         }
     }else if(ID == -1) { //비회원일 경우
